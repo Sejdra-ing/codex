@@ -1,0 +1,4 @@
+rootProject.name = 'cloud-challenge-codex'
+
+include 'security'
+include 'catalog'
