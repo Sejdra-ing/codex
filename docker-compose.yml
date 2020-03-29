@@ -31,7 +31,7 @@ services:
       - DEBUG=true
       - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6667
     ports:
-      - "8081:8080"
+      - "8081:8888"
       - "6667:6667"
     networks:
       - test
