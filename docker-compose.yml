@@ -1,0 +1,39 @@
+#create a network and add our services into this network:
+version: "3.7"
+
+networks:
+  test:
+
+services:
+  catalog:
+    build:
+      context: ./catalog
+      dockerfile: Dockerfile
+    image: catalog
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - DEBUG=true
+      - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6666
+    ports:
+      - "8080:8080"
+      - "6666:6666"
+    networks:
+      - test
+    command: java -jar catalog/build/libs/catalog-0.0.1-SNAPSHOT.jar
+
+  security:
+    build:
+      context: ./security
+      dockerfile: Dockerfile
+    image: security
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - DEBUG=true
+      - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6667
+    ports:
+      - "8081:8080"
+      - "6667:6667"
+    networks:
+      - test
+    command: java -jar security/build/libs/security-0.0.1-SNAPSHOT.jar
+
