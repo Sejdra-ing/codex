@@ -1,0 +1,9 @@
+server.port: 8888
+
+spring:
+  cloud:
+    config:
+      uri: http://localhost:8081
+  application:
+    name: codex-security-catalog
+
