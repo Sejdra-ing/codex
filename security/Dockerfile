@@ -2,13 +2,13 @@ FROM openjdk:11.0.6-jdk-slim
 
 ENV JAVA_OPTS=""
 ENV SPRING_PROFILES_ACTIVE=docker
-ARG APP_VERSION="0.2.0-SNAPSHOT"
+ARG APP_VERSION="0.0.1-SNAPSHOT"
 
 RUN addgroup --system spring && adduser --system spring
 USER spring:spring
 VOLUME /tmp
-ADD build/libs/security-${APP_VERSION}.jar app.jar
-ADD src/main/resources/application.yml application.yml
-EXPOSE $SERVER_PORT
-EXPOSE $DEBUG_PORT
-ENTRYPOINT [ "sh", "-c", "exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar --spring.profiles.active=$SPRING_PROFILES_ACTIVE"  ]
+WORKDIR /home/spring
+ADD build/libs/security-${APP_VERSION}.jar /home/spring/app.jar
+ADD src/main/resources/* /home/spring/
+ADD script/* /home/spring/
+ENTRYPOINT ["sh", "-c", "'./run.sh'"]

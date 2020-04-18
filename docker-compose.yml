@@ -6,7 +6,7 @@ networks:
 
 services:
 
-  config:
+  config-server:
     build:
       context: ./config
       dockerfile: Dockerfile
@@ -15,6 +15,8 @@ services:
     image: config
     environment:
       - SPRING_PROFILES_ACTIVE=dev
+    expose:
+      - "8081"
     ports:
       - "8081:8888"
     networks:
@@ -23,13 +25,15 @@ services:
       - ${HOME}/codex/codex-config:/home/spring/codex-config
     command: java -jar codex/build/libs/config-0.1.0.jar
 
-  catalog:
+  catalog-server:
     build:
       context: ./catalog
       dockerfile: Dockerfile
       args:
         - APP_VERSION=0.0.1-SNAPSHOT
     image: catalog
+    depends_on:
+      - config-server
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - DEBUG=true
@@ -39,15 +43,18 @@ services:
       - "6666:6666"
     networks:
       - codex-network
+    entrypoint: ["sh", "-c", "./wait-for-it.sh config-server:8888 -t 25 && ./run.sh"]
     command: java -jar catalog/build/libs/catalog-${APP_VERSION}.jar
 
-  security:
+  security-server:
     build:
       context: ./security
       dockerfile: Dockerfile
       args:
         - APP_VERSION=0.0.1-SNAPSHOT
     image: security
+    depends_on:
+      - config-server
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - DEBUG=true
@@ -57,5 +64,6 @@ services:
       - "6667:6667"
     networks:
       - codex-network
+    entrypoint: ["sh", "-c", "./wait-for-it.sh config-server:8888 -t 25 && ./run.sh"]
     command: java -jar security/build/libs/security-${APP_VERSION}.jar
 
