@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: config-server
+  name: config-server
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: config-server
+    spec:
+      containers:
+      - args:
+        - java
+        - -jar
+        - codex/build/libs/config-0.1.0.jar
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
+        image: thetyne/codex-config
+        name: config-server
+        ports:
+        - containerPort: 8888
+        resources: {}
+        volumeMounts:
+        - mountPath: /home/spring/codex-config
+          name: config-server-claim0
+      restartPolicy: Always
+      volumes:
+      - name: config-server-claim0
+        persistentVolumeClaim:
+          claimName: config-server-claim0
+status: {}

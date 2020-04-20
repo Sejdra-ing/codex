@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: security-server
+  name: security-server
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: security-server
+    spec:
+      containers:
+      - args:
+        - java
+        - -jar
+        - security/build/libs/security-.jar
+        command:
+        - sh
+        - -c
+        - ./wait-for-it.sh config-server:8888 -t 25 && ./run.sh
+        env:
+        - name: DEBUG
+          value: "true"
+        - name: JAVA_OPTS
+          value: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6667
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
+        image: thetyne/codex-security
+        name: security-server
+        ports:
+        - containerPort: 8888
+        - containerPort: 6667
+        resources: {}
+      restartPolicy: Always
+status: {}

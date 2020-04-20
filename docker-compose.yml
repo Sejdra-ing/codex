@@ -1,5 +1,5 @@
 #create a network and add our services into this network:
-version: "3.7"
+version: "3"
 
 networks:
   codex-network:
@@ -7,12 +7,9 @@ networks:
 services:
 
   config-server:
-    build:
-      context: ./config
-      dockerfile: Dockerfile
-      args:
-        - APP_VERSION=0.1.0
-    image: config
+ 
+    image: thetyne/codex-config
+
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     expose:
@@ -26,12 +23,8 @@ services:
     command: java -jar codex/build/libs/config-0.1.0.jar
 
   catalog-server:
-    build:
-      context: ./catalog
-      dockerfile: Dockerfile
-      args:
-        - APP_VERSION=0.0.1-SNAPSHOT
-    image: catalog
+ 
+    image: thetyne/codex-catalog
     depends_on:
       - config-server
     environment:
@@ -47,12 +40,9 @@ services:
     command: java -jar catalog/build/libs/catalog-${APP_VERSION}.jar
 
   security-server:
-    build:
-      context: ./security
-      dockerfile: Dockerfile
-      args:
-        - APP_VERSION=0.0.1-SNAPSHOT
-    image: security
+ 
+    image: thetyne/codex-security
+
     depends_on:
       - config-server
     environment:
